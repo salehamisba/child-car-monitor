@@ -1,0 +1,7 @@
+{
+  "name": "child-car-monitor",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Child-in-car safety monitor: dashboard + small Vercel backend",
+  "type": "module"
+}

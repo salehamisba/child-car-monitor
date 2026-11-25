@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Child-in-Car Safety Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== Icon set (drawn by hand, no external library) ===== -->
+  <svg class="sprite" aria-hidden="true">
+    <defs>
+      <radialGradient id="knobGrad" cx="35%" cy="30%" r="80%">
+        <stop offset="0" stop-color="#ffffff"/>
+        <stop offset="1" stop-color="#d8cdf5"/>
+      </radialGradient>
+    </defs>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 2l8 3v6c0 5-3.4 9.4-8 11-4.6-1.6-8-6-8-11V5z"/><circle cx="12" cy="9" r="2.2"/><path d="M8.5 16a3.5 3.5 0 0 1 7 0"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+    <symbol id="i-unlock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.6-1.8"/></symbol>
+    <symbol id="i-child" viewBox="0 0 24 24"><circle cx="12" cy="6" r="3"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/></symbol>
+    <symbol id="i-fan" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.8"/><path d="M12 10.2c0-3.6.9-6.7 3.6-6.7 1.9 0 2.8 1.8 1.9 3.6-.9 1.8-3.4 3.1-5.5 3.1z"/><path d="M12 10.2c0-3.6.9-6.7 3.6-6.7 1.9 0 2.8 1.8 1.9 3.6-.9 1.8-3.4 3.1-5.5 3.1z" transform="rotate(120 12 12)"/><path d="M12 10.2c0-3.6.9-6.7 3.6-6.7 1.9 0 2.8 1.8 1.9 3.6-.9 1.8-3.4 3.1-5.5 3.1z" transform="rotate(240 12 12)"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-bell-off" viewBox="0 0 24 24"><path d="M6 9a6 6 0 0 1 12 0c0 6 2.5 8 2.5 8h-17S6 15 6 9z"/><path d="M10 20.5a2 2 0 0 0 4 0"/><path d="M3 3l18 18"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M3 16v-3l2.2-5A2 2 0 0 1 7 6.8h10a2 2 0 0 1 1.8 1.2L21 13v3a1 1 0 0 1-1 1h-1"/><path d="M5 17H4a1 1 0 0 1-1-1"/><path d="M9 17h6"/><circle cx="7" cy="17" r="2"/><circle cx="17" cy="17" r="2"/><path d="M4 12h16"/></symbol>
+    <symbol id="i-chip" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="9.5" y="9.5" width="5" height="5" rx="1"/><path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M3 3v17a1 1 0 0 0 1 1h17"/><path d="M7 15l4-5 3 3 5-6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.2"/><circle cx="4.5" cy="12" r="1.2"/><circle cx="4.5" cy="18" r="1.2"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 13.5A8.5 8.5 0 1 1 10.5 3.5a6.8 6.8 0 0 0 10 10z"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+    <symbol id="i-therm" viewBox="0 0 24 24"><path d="M14 14.8V4.5a2 2 0 0 0-4 0v10.3a4 4 0 1 0 4 0z"/></symbol>
+    <symbol id="i-drop" viewBox="0 0 24 24"><path d="M12 2.8l5.6 5.7a7.9 7.9 0 1 1-11.2 0z"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5l12 7.5-12 7.5z"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 4v6h6"/><path d="M5.6 15a7.5 7.5 0 1 0 1.8-7.8L4 10"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9L1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-speaker" viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+  </svg>
+
+  <!-- ===== Alert banner (shows on warning / danger) ===== -->
+  <div id="alertBanner" class="alert-banner" hidden role="alert">
+    <svg class="icon"><use href="#i-alert"/></svg>
+    <span id="alertText">Child inside locked car</span>
+    <button id="ackBtn" class="btn btn-light">Acknowledge</button>
+  </div>
+
+  <!-- ===== Top bar ===== -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-logo"><svg class="icon"><use href="#i-shield"/></svg></div>
+      <div>
+        <h1>Child-in-Car Safety Monitor</h1>
+        <p>Watches the back seat when the car is locked</p>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="segmented" id="sourceSwitch" role="tablist" aria-label="Data source">
+        <button data-source="demo" class="active" role="tab">Demo</button>
+        <button data-source="cloud" role="tab">Cloud</button>
+        <button data-source="live" role="tab">ESP32 Live</button>
+        <button data-source="thingspeak" role="tab">ThingSpeak</button>
+      </div>
+      <span id="connPill" class="pill pill-demo"><span class="pill-dot"></span><span id="connText">Demo mode</span></span>
+      <span id="clock" class="clock">--:--:--</span>
+      <button id="alertsBtn" class="icon-btn" title="Turn on sound, voice and pop-up alerts" aria-label="Alerts">
+        <svg class="icon"><use href="#i-bell-off"/></svg>
+      </button>
+      <button id="themeBtn" class="icon-btn" title="Light / dark theme" aria-label="Theme">
+        <svg class="icon"><use href="#i-sun"/></svg>
+      </button>
+      <button id="settingsBtn" class="icon-btn" title="Settings" aria-label="Settings">
+        <svg class="icon"><use href="#i-sliders"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <!-- ===== Overall status ===== -->
+    <section class="card status-card level-0 tilt" id="statusCard">
+      <div class="status-hero">
+      <div class="card-label">System status</div>
+      <div class="status-head">
+        <span class="status-dot"></span>
+        <span id="statusLabel" class="status-label">SAFE</span>
+      </div>
+      <h2 id="statusTitle">No child inside a locked car</h2>
+      <p id="statusDetail" class="muted">All clear. The system is watching the cabin.</p>
+      </div>
+
+      <div class="status-meta">
+        <div class="meta"><span>Time inside</span><strong id="timeInside">&mdash;</strong></div>
+        <div class="meta"><span>Feels like</span><strong id="feelsLike">&mdash;</strong></div>
+        <div class="meta"><span>Highest this session</span><strong id="maxTemp">&mdash;</strong></div>
+        <div class="meta"><span>Danger alerts</span><strong id="alertCount">0</strong></div>
+      </div>
+      <div class="last-update">Last update: <span id="lastUpdate">&mdash;</span></div>
+    </section>
+
+    <!-- ===== Live 3D car view ===== -->
+    <section class="card car-card">
+      <div class="card-head">
+        <div class="card-label"><svg class="icon"><use href="#i-car"/></svg> Live cabin view</div>
+        <span class="hint-inline" id="sceneHint">Drag the car to rotate it</span>
+      </div>
+      <div class="scene" id="scene">
+        <canvas id="car3d" aria-label="3D view of the car. The child, lock, fan and heat are shown live."></canvas>
+        <svg id="carSvg" class="car" hidden viewBox="0 0 240 420" role="img" aria-label="Top view of the car">
+        <defs>
+          <radialGradient id="heatGlow" cx="50%" cy="50%" r="60%">
+            <stop offset="0%" stop-color="#ff3b30" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#ff3b30" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <ellipse cx="120" cy="404" rx="88" ry="10" class="car-shadow"/>
+        <!-- wheels -->
+        <rect x="22" y="88" width="16" height="58" rx="5" class="car-wheel"/>
+        <rect x="202" y="88" width="16" height="58" rx="5" class="car-wheel"/>
+        <rect x="22" y="288" width="16" height="58" rx="5" class="car-wheel"/>
+        <rect x="202" y="288" width="16" height="58" rx="5" class="car-wheel"/>
+        <!-- mirrors -->
+        <rect x="20" y="150" width="18" height="10" rx="4" class="car-body"/>
+        <rect x="202" y="150" width="18" height="10" rx="4" class="car-body"/>
+        <!-- body -->
+        <rect id="carBody" x="34" y="22" width="172" height="374" rx="68" class="car-body"/>
+        <!-- headlights / tail lights -->
+        <ellipse cx="76" cy="40" rx="16" ry="6" class="car-headlight"/>
+        <ellipse cx="164" cy="40" rx="16" ry="6" class="car-headlight"/>
+        <ellipse cx="78" cy="384" rx="16" ry="5" class="car-taillight"/>
+        <ellipse cx="162" cy="384" rx="16" ry="5" class="car-taillight"/>
+        <!-- glass -->
+        <path d="M58 122 Q120 94 182 122 L172 152 Q120 134 68 152 Z" class="car-glass"/>
+        <path d="M66 334 Q120 350 174 334 L182 360 Q120 382 58 360 Z" class="car-glass"/>
+        <!-- cabin (colour shows temperature) -->
+        <rect id="cabin" x="58" y="156" width="124" height="174" rx="18" class="car-cabin"/>
+        <rect id="cabinHeat" x="58" y="156" width="124" height="174" rx="18" fill="url(#heatGlow)" opacity="0"/>
+        <!-- seats (right-hand drive: driver on the right) -->
+        <rect x="70" y="166" width="42" height="50" rx="11" class="car-seat"/>
+        <rect x="128" y="166" width="42" height="50" rx="11" class="car-seat"/>
+        <rect id="childSeat" x="70" y="258" width="42" height="58" rx="11" class="car-seat"/>
+        <rect x="128" y="258" width="42" height="58" rx="11" class="car-seat"/>
+        <text x="149" y="194" class="car-seat-label">Driver</text>
+        <!-- child figure -->
+        <g id="childFig" class="child-fig">
+          <circle cx="91" cy="276" r="8"/>
+          <path d="M78 306 a13 13 0 0 1 26 0 z"/>
+        </g>
+        <!-- fan on the centre console -->
+        <g id="fanIcon" class="car-fan">
+          <circle cx="120" cy="237" r="13" class="car-fan-bg"/>
+          <g class="fan-rotor">
+            <use href="#i-fan" x="109" y="226" width="22" height="22"/>
+          </g>
+        </g>
+        <!-- lock badge -->
+        <g id="lockBadge" class="car-lock">
+          <circle cx="120" cy="80" r="17" class="lock-bg"/>
+          <use id="lockUse" href="#i-unlock" x="109" y="69" width="22" height="22"/>
+        </g>
+      </svg>
+        <div class="hud hud-top">
+          <span class="hud-chip" id="hudLock"><i></i><b>Unlocked</b></span>
+          <span class="hud-chip" id="hudChild"><i></i><b>Seat empty</b></span>
+          <span class="hud-chip" id="hudFan"><i></i><b>Fan off</b></span>
+          <span class="hud-chip" id="hudBuzzer"><i></i><b>Buzzer off</b></span>
+        </div>
+        <div class="hud hud-bottom">
+          <div class="hud-temp"><span id="carCaptionTemp">--</span><small>&deg;C in cabin</small></div>
+          <span class="hud-note" id="hudNote">Glass roof view</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Temperature gauge ===== -->
+    <section class="card gauge-card temp-card tilt">
+      <div class="card-label"><svg class="icon icon-sm"><use href="#i-therm"/></svg> Cabin temperature</div>
+      <div id="tempGauge" class="gauge"></div>
+      <div class="gauge-foot">
+        <span>Warning <b id="warnLbl">32</b>&deg;C</span>
+        <span>Danger <b id="dangerLbl">38</b>&deg;C</span>
+      </div>
+    </section>
+
+    <!-- ===== Humidity gauge ===== -->
+    <section class="card gauge-card hum-card tilt">
+      <div class="card-label"><svg class="icon icon-sm"><use href="#i-drop"/></svg> Cabin humidity</div>
+      <div id="humGauge" class="gauge"></div>
+      <div class="gauge-foot">
+        <span>Sensor: DHT11</span>
+        <span>Refresh: <b id="refreshLbl">2</b> s</span>
+      </div>
+    </section>
+
+    <!-- ===== Device tiles ===== -->
+    <section class="card tiles-card">
+      <div class="card-label"><svg class="icon"><use href="#i-chip"/></svg> Devices</div>
+      <div class="tiles">
+        <div class="tile" id="tileLock">
+          <svg class="icon tile-icon"><use href="#i-unlock"/></svg>
+          <div><span class="tile-name">Car</span><strong class="tile-val">Unlocked</strong></div>
+        </div>
+        <div class="tile" id="tileChild">
+          <svg class="icon tile-icon"><use href="#i-child"/></svg>
+          <div><span class="tile-name">Child seat (IR)</span><strong class="tile-val">Empty</strong></div>
+        </div>
+        <div class="tile" id="tileFan">
+          <svg class="icon tile-icon"><use href="#i-fan"/></svg>
+          <div><span class="tile-name">Fan (motor)</span><strong class="tile-val">OFF</strong></div>
+        </div>
+        <div class="tile" id="tileBuzzer">
+          <svg class="icon tile-icon"><use href="#i-speaker"/></svg>
+          <div><span class="tile-name">Buzzer</span><strong class="tile-val">OFF</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Live chart ===== -->
+    <section class="card chart-card">
+      <div class="card-head">
+        <div class="card-label"><svg class="icon"><use href="#i-chart"/></svg> Temperature &amp; humidity trend</div>
+        <div class="legend">
+          <span class="lg lg-temp">Temperature</span>
+          <span class="lg lg-hum">Humidity</span>
+          <span class="lg lg-limit">Danger limit</span>
+          <button id="exportReadings" class="btn btn-ghost small" title="Download all readings as CSV"><svg class="icon icon-sm"><use href="#i-download"/></svg>Readings</button>
+          <select id="windowSel" aria-label="Time window">
+            <option value="60" selected>Last 1 min</option>
+            <option value="180">Last 3 min</option>
+            <option value="600">Last 10 min</option>
+          </select>
+        </div>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="chart"></canvas>
+        <div id="chartTip" class="chart-tip" hidden></div>
+      </div>
+    </section>
+
+    <!-- ===== Controls ===== -->
+    <section class="card controls-card">
+      <div class="card-label"><svg class="icon"><use href="#i-sliders"/></svg> Controls</div>
+
+      <div class="ctrl-row">
+        <span>Control mode</span>
+        <div class="segmented small" id="modeSwitch">
+          <button data-mode="auto" class="active">Auto</button>
+          <button data-mode="manual">Manual</button>
+        </div>
+      </div>
+      <p class="hint" id="modeHint">Auto: the ESP32 switches the fan and buzzer by itself when there is danger.</p>
+
+      <div class="ctrl-buttons">
+        <button id="fanBtn" class="btn btn-toggle" disabled>
+          <svg class="icon"><use href="#i-fan"/></svg><span>Fan OFF</span>
+        </button>
+        <button id="buzzerBtn" class="btn btn-toggle" disabled>
+          <svg class="icon"><use href="#i-speaker"/></svg><span>Buzzer OFF</span>
+        </button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="card-label"><svg class="icon"><use href="#i-bell"/></svg> Alerts on this screen</div>
+      <label class="switch-row"><span>Alarm sound</span><input type="checkbox" id="optSound" checked><span class="switch"></span></label>
+      <label class="switch-row"><span>Voice message</span><input type="checkbox" id="optVoice" checked><span class="switch"></span></label>
+      <label class="switch-row"><span>Pop-up notification</span><input type="checkbox" id="optNotify" checked><span class="switch"></span></label>
+      <p class="hint">Click the bell at the top once to allow sound on this browser.</p>
+    </section>
+
+    <!-- ===== Event log ===== -->
+    <section class="card log-card">
+      <div class="card-head">
+        <div class="card-label"><svg class="icon"><use href="#i-list"/></svg> Event log</div>
+        <div class="head-actions">
+          <button id="exportBtn" class="btn btn-ghost small"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export CSV</button>
+          <button id="clearBtn" class="btn btn-ghost small"><svg class="icon icon-sm"><use href="#i-trash"/></svg>Clear</button>
+        </div>
+      </div>
+      <ul id="logList" class="log"></ul>
+    </section>
+
+    <!-- ===== Demo simulator ===== -->
+    <section class="card sim-card" id="simCard">
+      <div class="card-head">
+        <div class="card-label"><svg class="icon"><use href="#i-play"/></svg> Demo simulator</div>
+        <span class="chip chip-info">No hardware needed</span>
+      </div>
+      <p class="hint">Use this to show the dashboard working before the ESP32 is connected.</p>
+
+      <div class="sim-grid">
+        <button id="simLock" class="btn btn-outline"><svg class="icon"><use href="#i-lock"/></svg><span>Lock car</span></button>
+        <button id="simChild" class="btn btn-outline"><svg class="icon"><use href="#i-child"/></svg><span>Put child on seat</span></button>
+        <button id="simHeat" class="btn btn-outline"><svg class="icon"><use href="#i-sun"/></svg><span>Sun heat ON</span></button>
+        <button id="simReset" class="btn btn-outline"><svg class="icon"><use href="#i-reset"/></svg><span>Reset</span></button>
+      </div>
+
+      <label class="range-row">
+        <span>Outside temperature <b id="ambientLbl">28</b>&deg;C</span>
+        <input type="range" id="ambient" min="20" max="45" value="28">
+      </label>
+
+      <button id="storyBtn" class="btn btn-primary wide"><svg class="icon"><use href="#i-play"/></svg><span>Play demo story (40 s)</span></button>
+      <p id="storyCaption" class="story-caption"></p>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Made for the IoT Sensors activity, 5th semester EEE. Built with HTML, CSS and JavaScript. The 3D view uses the open-source Three.js library.
+  </footer>
+
+  <!-- ===== Toast messages ===== -->
+  <div id="toasts" class="toasts" aria-live="polite"></div>
+
+  <!-- ===== Settings dialog ===== -->
+  <dialog id="settingsDlg" class="dialog">
+    <form method="dialog" id="settingsForm">
+      <h3>Settings</h3>
+
+      <fieldset>
+        <legend>Cloud (Vercel)</legend>
+        <label>Cloud link &ndash; leave empty when this page is opened from Vercel
+          <input type="text" id="setCloudUrl" placeholder="https://your-project.vercel.app" autocomplete="off" spellcheck="false">
+        </label>
+        <label>Control PIN &ndash; only if you set CONTROL_KEY on Vercel
+          <input type="password" id="setCtrlKey" placeholder="optional" autocomplete="new-password">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>ESP32 Live (same Wi-Fi)</legend>
+        <label>ESP32 address &ndash; childcar.local, or the IP from the Serial Monitor
+          <input type="text" id="setIp" placeholder="childcar.local" autocomplete="off" spellcheck="false">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>ThingSpeak (cloud)</legend>
+        <label>Channel ID
+          <input type="text" id="setTsId" placeholder="1234567" autocomplete="off">
+        </label>
+        <label>Read API key (only for private channels)
+          <input type="text" id="setTsKey" placeholder="optional" autocomplete="off">
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Alert limits</legend>
+        <div class="two-col">
+          <label>Warning temperature (&deg;C)
+            <input type="number" id="setWarn" min="20" max="60" step="0.5">
+          </label>
+          <label>Danger temperature (&deg;C)
+            <input type="number" id="setDanger" min="20" max="70" step="0.5">
+          </label>
+          <label>Danger if child alone for (s)
+            <input type="number" id="setAlone" min="5" max="3600" step="5">
+          </label>
+          <label>Refresh every (s)
+            <input type="number" id="setPoll" min="1" max="30" step="1">
+          </label>
+        </div>
+        <p class="hint">These are demo limits for a classroom model. They are not medical advice.</p>
+      </fieldset>
+
+      <div class="dlg-actions">
+        <button value="cancel" class="btn btn-ghost" formnovalidate>Cancel</button>
+        <button value="save" id="saveSettings" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="lib/three.min.js"></script>
+  <script src="car3d.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
